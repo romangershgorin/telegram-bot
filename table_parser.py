@@ -1,0 +1,63 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import io
+from datetime import datetime
+
+
+FSS_ROOT = 'http://fss.ru'
+
+
+def get_page_html():
+    page = requests.get('http://fss.ru/ru/fund/disabilitylist/501923/503049.shtml')
+    return page.text
+    
+def get_url_from_html(html):
+    parsed_html = BeautifulSoup(html, 'html.parser')
+    url_tag = parsed_html.find('a', string='Скачать')
+    return FSS_ROOT + url_tag.get('href')
+
+def get_table(table_url):
+    table_data = requests.get(get_url_from_html(get_page_html()))
+    file = io.BytesIO(table_data.content)
+    return pd.read_excel(file)
+
+
+def find_district(table):
+    for district in table['Unnamed: 2']:
+        if isinstance(district, str):
+            if district.find('моленск') != -1:
+                return True
+    
+    return False
+
+
+def check_district():
+    table_url = get_url_from_html(get_page_html())
+    table = get_table(table_url)
+    return find_district(table)
+
+
+def parse_datetime(column_data):
+    if (isinstance(column_data, datetime)):
+        return [str(column_data).split()[0],]
+    else:
+        return column_data.split()
+
+
+def get_processed_districts():
+    table_url = get_url_from_html(get_page_html())
+    table = get_table(table_url)
+    
+    districts_info = ''
+    for index in range(1, table.shape[0]):
+        if isinstance(table['Unnamed: 2'][index], str):
+            from_date = parse_datetime(table['Период действия'][index])
+            to_date = parse_datetime(table['Unnamed: 5'][index])
+            districts_info += table['Unnamed: 2'][index] + ': ' + from_date[0] + ' -- ' + to_date[-1] + '\n'
+    
+    return districts_info
+
+
+if __name__ == '__main__':
+    print(get_processed_districts())
