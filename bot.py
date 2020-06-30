@@ -23,6 +23,7 @@ def get_all_districts(update, context):
         text=districts)
 
 
+print('Selflogs: starting...')
 updater = Updater(token='1342737629:AAGW0mpQUPC5Kl699f7O1cNYj7Qd7c5SL4w', use_context=True)
 start_handler = CommandHandler('start', start)
 check_district_handler = CommandHandler('check', check_district)
