@@ -52,14 +52,16 @@ def get_processed_districts():
     table = get_table(table_url)
     
     districts_info = ''
+    district_index = 1
     for index in range(1, table.shape[0]):
         if isinstance(table['Unnamed: 2'][index], str):
             from_date = parse_datetime(table['Период действия'][index])
             to_date = parse_datetime(table['Unnamed: 5'][index])
-            districts_info += '{}. {}: {}-{}\n'.format(index, 
+            districts_info += '{}. {}: {}-{}\n'.format(district_index, 
                                                        table['Unnamed: 2'][index],
                                                        from_date[0],
                                                        to_date[-1])
+            district_index += 1
     
     return districts_info
 
