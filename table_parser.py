@@ -11,11 +11,13 @@ FSS_ROOT = 'http://fss.ru'
 def get_page_html():
     page = requests.get('http://fss.ru/ru/fund/disabilitylist/501923/503049.shtml')
     return page.text
-    
+
+
 def get_url_from_html(html):
     parsed_html = BeautifulSoup(html, 'html.parser')
     url_tag = parsed_html.find('a', string='Скачать')
     return FSS_ROOT + url_tag.get('href')
+
 
 def get_table(table_url):
     table_data = requests.get(get_url_from_html(get_page_html()))
@@ -54,7 +56,10 @@ def get_processed_districts():
         if isinstance(table['Unnamed: 2'][index], str):
             from_date = parse_datetime(table['Период действия'][index])
             to_date = parse_datetime(table['Unnamed: 5'][index])
-            districts_info += table['Unnamed: 2'][index] + ': ' + from_date[0] + ' -- ' + to_date[-1] + '\n'
+            districts_info += '{} {}: {}-{}\n'.format(index, 
+                                                      table['Unnamed: 2'][index],
+                                                      from_date[0],
+                                                      to_date[-1])
     
     return districts_info
 
