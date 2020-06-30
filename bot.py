@@ -6,13 +6,15 @@ import os
 
 
 def start(update, context):
+    '''
     keyboard = [InlineKeyboardButton("Проверить Смоленск", callback_data='1'),
                 InlineKeyboardButton("Весь лист", callback_data='2')]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     update.message.reply_text('Пожалуйста, выберите:', reply_markup=reply_markup)
-
+    '''
+    
     context.bot.send_message(
         chat_id=update.effective_chat.id, 
         text="Я умею искать города с одобренными больничными для 65+")
