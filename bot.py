@@ -65,7 +65,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('all', get_all_districts))
     
     job_queue = updater.job_queue
-    job_queue.run_repeating(callback, 20)
+    job_queue.run_repeating(callback, 300)
 
     if MODE == 'HEROKU':
         logging.info('Setting up webhook...')
