@@ -31,7 +31,7 @@ def find_district(table):
         if isinstance(district, str):
             if district.find('моленск') != -1:
                 return True
-    
+
     return False
 
 
@@ -61,9 +61,7 @@ def get_processed_districts():
     district_index = 1
     districts_info = ''
     for key in districts_map:
-        districts_info += '{}. {}: {}\n'.format(district_index, 
-                                                key,
-                                                districts_map[key])
+        districts_info += '{}. {}\n'.format(district_index, key)
         district_index += 1
     
     return district_index, districts_info
