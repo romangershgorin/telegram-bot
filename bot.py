@@ -25,17 +25,24 @@ def check_district(update, context):
         text='Smolensk is {}found in the list'.format('' if result else 'not '))
 
 
+def send_long_message(context, chat_id, message):
+    if len(message) > 4096:
+        for x in range(0, len(message), 4096):
+            context.bot.send_message(chat_id, message[x:x+4096])
+    else:
+        context.bot.send_message(chat_id, message)
+
+
 def get_all_districts(update, context):
-    districts = table_parser.get_processed_districts()
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=districts)
+    count, districts = table_parser.get_processed_districts()
+    send_long_message(context, update.effective_chat.id, districts)
 
 
 def callback(context):
     global current_district_count
     district_count, districts = table_parser.get_processed_districts()
     if current_district_count < district_count:
+        send_long_message(context, -448378877, districts)
         context.bot.send_message(chat_id=-448378877, text=districts)
         current_district_count = district_count
     else:
@@ -58,8 +65,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('all', get_all_districts))
     
     job_queue = updater.job_queue
-    job_queue.run_repeating(callback, 900)
-
+    job_queue.run_repeating(callback, 20)
 
     if MODE == 'HEROKU':
         logging.info('Setting up webhook...')
