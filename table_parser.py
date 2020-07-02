@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import io
 from datetime import datetime
+from collections import defaultdict
 
 
 FSS_ROOT = 'http://fss.ru'
@@ -51,19 +52,21 @@ def get_processed_districts():
     table_url = get_url_from_html(get_page_html())
     table = get_table(table_url)
     
-    districts_info = ''
-    district_index = 1
+    districts_map = defaultdict(str)
     for index in range(1, table.shape[0]):
         if isinstance(table['Unnamed: 2'][index], str):
-            from_date = parse_datetime(table['Период действия'][index])
             to_date = parse_datetime(table['Unnamed: 5'][index])
-            districts_info += '{}. {}: {}-{}\n'.format(district_index, 
-                                                       table['Unnamed: 2'][index],
-                                                       from_date[0],
-                                                       to_date[-1])
-            district_index += 1
+            districts_map[table['Unnamed: 2'][index]] = to_date[-1]
     
-    return districts_info
+    district_index = 1
+    districts_info = ''
+    for key in districts_map:
+        districts_info += '{}. {}: {}\n'.format(district_index, 
+                                                key,
+                                                districts_map[key])
+        district_index += 1
+    
+    return district_index, districts_info
 
 
 if __name__ == '__main__':

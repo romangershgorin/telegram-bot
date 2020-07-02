@@ -5,18 +5,16 @@ import logging
 import os
 
 
+current_district_count = 0
+
+
 def start(update, context):
-    '''
-    keyboard = [InlineKeyboardButton("Проверить Смоленск", callback_data='1'),
-                InlineKeyboardButton("Весь лист", callback_data='2')]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    update.message.reply_text('Пожалуйста, выберите:', reply_markup=reply_markup)
-    '''
-    
     context.bot.send_message(
-        chat_id=update.effective_chat.id, 
+        chat_id=-448378877,
+        text="Я умею искать города с одобренными больничными для 65+")
+
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
         text="Я умею искать города с одобренными больничными для 65+")
 
 
@@ -34,6 +32,16 @@ def get_all_districts(update, context):
         text=districts)
 
 
+def callback(context):
+    global current_district_count
+    district_count, districts = table_parser.get_processed_districts()
+    if current_district_count < district_count:
+        context.bot.send_message(chat_id=-448378877, text=districts)
+        current_district_count = district_count
+    else:
+        context.bot.send_message(chat_id=-448378877, text="No update yet :(")
+
+
 def main():
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -48,6 +56,10 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('check', check_district))
     updater.dispatcher.add_handler(CommandHandler('all', get_all_districts))
+    
+    job_queue = updater.job_queue
+    job_queue.run_repeating(callback, 900)
+
 
     if MODE == 'HEROKU':
         logging.info('Setting up webhook...')
@@ -61,6 +73,7 @@ def main():
         updater.start_polling()
 
     updater.idle()
+
 
 if __name__ == '__main__':
     main()
