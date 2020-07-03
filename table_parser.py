@@ -55,7 +55,7 @@ def get_processed_districts():
     districts_map = defaultdict(str)
     for index in range(1, table.shape[0]):
         if isinstance(table['Unnamed: 2'][index], str):
-            to_date = parse_datetime(table['Unnamed: 5'][index])
+            to_date = parse_datetime(table['Unnamed: 4'][index])
             districts_map[table['Unnamed: 2'][index]] = to_date[-1]
     
     district_index = 1
