@@ -52,17 +52,18 @@ def parse_datetime(column_data):
 def get_processed_districts():
     table_url = get_url_from_html(get_page_html())
     table = get_table(table_url)
-    
+    to_date_column = table.columns[-1]
+
     districts_map = defaultdict(str)
     for index in range(1, table.shape[0]):
         if isinstance(table['Unnamed: 2'][index], str):
-            to_date = parse_datetime(table['Unnamed: 4'][index])
+            to_date = parse_datetime(table[to_date_column][index])
             districts_map[table['Unnamed: 2'][index]] = to_date[-1]
     
     district_index = 1
     districts_info = ''
     for key in districts_map:
-        districts_info += '{}. {}\n'.format(district_index, key)
+        districts_info += '{}. {}: {}\n'.format(district_index, key, districts_map[key])
         district_index += 1
     
     return district_index, districts_info
