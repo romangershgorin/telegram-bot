@@ -10,7 +10,7 @@ FSS_ROOT = 'http://fss.ru'
 
 
 def get_page_html():
-    page = requests.get('http://fss.ru/ru/fund/quarantine/index.shtml')
+    page = requests.get('http://fss.ru/ru/fund/disabilitylist/501923/503049.shtml')
     return page.text
 
 
@@ -18,7 +18,7 @@ def get_url_from_html(html):
     parsed_html = BeautifulSoup(html, 'html.parser')
     for link in parsed_html.find_all(href=True):
         if (link.get('href').endswith('.xlsx')):
-            return link.get('href')
+            return FSS_ROOT + link.get('href')
 
 
 def get_table(table_url):
