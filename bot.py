@@ -2,6 +2,7 @@ from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from typing import Union, Optional
 import table_parser
+import decree_parser
 import logging
 import os
 
