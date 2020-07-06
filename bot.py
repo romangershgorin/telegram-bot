@@ -40,12 +40,6 @@ def pause_updates(update, context) -> None:
   
 
 def callback(context) -> None:
-    global repeated_updates_enabled
-    if repeated_updates_enabled != context.job.enabled:
-        context.job.enabled = repeated_updates_enabled
-        if not repeated_updates_enabled:
-            return
-
     global current_district_count
     district_count, districts = table_parser.get_processed_districts()
     if current_district_count < district_count:
