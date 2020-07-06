@@ -5,18 +5,19 @@ import io
 from datetime import datetime
 from collections import defaultdict
 import logging
+from typing import Tuple, DefaultDict, List, Union, Sequence
 
 
-FSS_ROOT = 'http://fss.ru'
-FSS_TABLE_PAGE = 'http://fss.ru/ru/fund/disabilitylist/501923/503049.shtml'
+FSS_ROOT: str = 'http://fss.ru'
+FSS_TABLE_PAGE: str = 'http://fss.ru/ru/fund/disabilitylist/501923/503049.shtml'
 
 
-def get_page_html():
+def get_page_html() -> str:
     page = requests.get(FSS_TABLE_PAGE)
     return page.text
 
 
-def get_url_from_html(html):
+def get_url_from_html(html: str) -> str:
     '''
     Retrieve href url from html page.
     Throw FileExistsError otherwise.
@@ -41,7 +42,7 @@ def get_table(table_url):
     return pd.read_excel(file)
 
 
-def parse_datetime(column_data):
+def parse_datetime(column_data) -> List[str]:
     '''
     Table contains two kinds of date data.
     1. Simple date with time
@@ -55,20 +56,20 @@ def parse_datetime(column_data):
         return column_data.split()
 
 
-def get_processed_districts():
+def get_processed_districts() -> Union[Tuple[int, str], None]:
     try:
         table_url = get_url_from_html(get_page_html())
         table = get_table(table_url)
         to_date_column = table.columns[-1]
 
-        districts_map = defaultdict(str)
+        districts_map: DefaultDict[str, str] = defaultdict(str)
         for index in range(1, table.shape[0]):
             if isinstance(table['Unnamed: 2'][index], str):
-                to_date = parse_datetime(table[to_date_column][index])
+                to_date: List[str] = parse_datetime(table[to_date_column][index])
                 districts_map[table['Unnamed: 2'][index]] = to_date[-1]
         
-        district_index = 1
-        districts_info = ''
+        district_index: int = 1
+        districts_info: str = ''
         for key in districts_map:
             districts_info += '{}. {}: {}\n'.format(district_index, key, districts_map[key])
             district_index += 1
