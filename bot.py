@@ -7,6 +7,7 @@ import os
 
 
 current_district_count: int = 0
+current_decrees_count: int = 0
 
 
 def send_long_message(context, chat_id: int, message: str) -> None:
@@ -23,7 +24,6 @@ def get_all_districts(update, context) -> None:
 
 def resume_updates(update, context) -> None:
     jobs = context.job_queue.jobs()
-    print(type(jobs), jobs)
     assert len(jobs) == 1
     jobs[0].enabled = True
 
@@ -32,7 +32,6 @@ def resume_updates(update, context) -> None:
 
 def pause_updates(update, context) -> None:
     jobs = context.job_queue.jobs()
-    print(type(jobs), jobs)
     assert len(jobs) == 1
     jobs[0].enabled = False
 
@@ -40,12 +39,23 @@ def pause_updates(update, context) -> None:
   
 
 def callback(context) -> None:
+    update_found: bool = False
+
     global current_district_count
     district_count, districts = table_parser.get_processed_districts()
     if current_district_count < district_count:
         send_long_message(context, -448378877, districts)
         current_district_count = district_count
-    else:
+        update_found = True
+
+    global current_decrees_count
+    dates = decree_parser.get_decree_dates()
+    if len(dates) != current_decrees_count:
+        context.bot.send_message(chat_id=-448378877, text="New decree was published: {}".format(dates[-1]))
+        update_found = True
+        current_decrees_count = len(dates)
+    
+    if not update_found:
         context.bot.send_message(chat_id=-448378877, text="No update yet :(")
 
 
